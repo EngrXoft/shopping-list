@@ -2,6 +2,7 @@ const itemForm = document.getElementById('item-form');
 const itemInput = document.getElementById('item-input');
 const itemList = document.getElementById('item-list');
 const clearBtn = document.getElementById('clear');
+const itemFilter = document.getElementById('filter');
 
 const addItem = (e) => {
   e.preventDefault();
@@ -21,7 +22,10 @@ const addItem = (e) => {
   const button = createButton('remove-item btn-link text-red');
   li.appendChild(button);
 
+  // Add li to the DOM
   itemList.appendChild(li);
+
+  checkUI();
 
   itemInput.value = ''; // Clears Input Field after adding an item
 };
@@ -44,17 +48,50 @@ const createIcon = (classes) => {
 
 // Remove list item
 const removeItem = (e) => {
-  /* Checking if the clicked item CONTAINS the stated class name in between the parenthesis */
+  //  Check if the item CONTAINS the stated class name
   if (e.target.parentElement.classList.contains('remove-item')) {
-    e.target.parentElement.parentElement.remove();
+    if (confirm('Are you sure?')) {
+      e.target.parentElement.parentElement.remove();
+
+      checkUI();
+    }
   }
 };
 
 // Clear list item
 const clearItems = () => {
-  /* Checks if the itemList has a first child. If it does, remove the first child */
-  while (itemList.firstChild) {
-    itemList.removeChild(itemList.firstChild);
+  if (confirm('Are you sure?')) {
+    // Remove all child element from itemList
+    while (itemList.firstChild) {
+      itemList.removeChild(itemList.firstChild);
+    }
+    checkUI();
+  }
+};
+
+// Filter items
+const filterItems = (e) => {
+  const items = itemList.querySelectorAll('li');
+  const text = e.target.value.toLowerCase();
+
+  items.forEach((item) => {
+    const itemName = item.textContent.toLowerCase();
+
+    // Shows the item if it contains the search text, otherwise hides it
+    item.style.display = itemName.includes(text) ? 'flex' : 'none';
+  });
+};
+
+// Check the state of the Application
+const checkUI = () => {
+  const items = itemList.querySelectorAll('li');
+
+  if (items.length === 0) {
+    itemFilter.style.display = 'none';
+    clearBtn.style.display = 'none';
+  } else {
+    itemFilter.style.display = 'block';
+    clearBtn.style.display = 'block';
   }
 };
 
@@ -62,3 +99,6 @@ const clearItems = () => {
 itemForm.addEventListener('submit', addItem);
 itemList.addEventListener('click', removeItem);
 clearBtn.addEventListener('click', clearItems);
+itemFilter.addEventListener('input', filterItems);
+
+checkUI();
