@@ -32,6 +32,11 @@ const onAddItemSubmit = (e) => {
     itemToEdit.classList.remove('edit-mode');
     itemToEdit.remove();
     isEditMode = false;
+  } else {
+    if (checkIfItemExists(newItem)) {
+      alert('Item already exists!');
+      return;
+    }
   }
 
   addItemToDOM(newItem);
@@ -96,9 +101,14 @@ const getItemFromStorage = () => {
 const onClickItem = (e) => {
   if (e.target.parentElement.classList.contains('remove-item')) {
     removeItem(e.target.parentElement.parentElement);
-  } else {
+  } else if (e.target.tagName === 'LI') {
     setItemToEdit(e.target);
   }
+};
+
+const checkIfItemExists = (item) => {
+  const itemsFromStorage = getItemFromStorage();
+  return itemsFromStorage.includes(item);
 };
 
 const setItemToEdit = (item) => {
@@ -171,6 +181,8 @@ const filterItems = (e) => {
 
 // Check the state of the Application
 const checkUI = () => {
+  itemInput.value = '';
+
   const items = itemList.querySelectorAll('li');
 
   if (items.length === 0) {
